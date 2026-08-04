@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import Sidebar from "@/components/layout/sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 import AppHeader from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";

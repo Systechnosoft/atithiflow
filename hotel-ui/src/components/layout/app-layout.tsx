@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "@/components/layout/sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 import AppHeader from "@/components/layout/app-header";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -7,7 +7,7 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { useAutoPropertySelect } from "@/hooks/use-auto-property-select";
 import EmptyPropertyOnboarding from "@/components/layout/empty-property-onboarding";
-import { LogoSpinner } from "@/components/spinner";
+import { LogoSpinner } from "@/components/Spinner";
 
 export default function AppLayout() {
     const [collapsed, setCollapsed] = useState(false);

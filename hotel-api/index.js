@@ -37,6 +37,7 @@ import menuItemGroupRoutes from "./src/routes/menu-item-group-route.js";
 import deliveryPartnersRoutes from "./src/routes/delivery-partner-route.js";
 import invoiceRoutes from "./src/routes/invoice-route.js";
 import { normalizeRequestKeys } from "./src/middlewares/normalize-request-keys.js";
+import { getDb } from "./utils/getDb.js";
 
 config()
 
@@ -112,6 +113,27 @@ app.use("/inventory", inventoryRoutes)
 app.use("/menu-item-groups", menuItemGroupRoutes)
 app.use("/delivery-partners", deliveryPartnersRoutes);
 app.use("/invoices", invoiceRoutes);
+
+app.get("/healthz", async (req, res) => {
+    try {
+        const db = getDb();
+        const result = await db.query("SELECT 1 AS status");
+        if (result.rows?.[0]?.status === 1) {
+            return res.status(200).json({
+                status: "ok",
+                database: "connected",
+                uptime_seconds: process.uptime(),
+            });
+        }
+
+        throw new Error("Unexpected database health response");
+    } catch (error) {
+        return res.status(503).json({
+            status: "unhealthy",
+            error: error.message,
+        });
+    }
+});
 
 // Global error handler
 app.use((err, req, res, next) => {

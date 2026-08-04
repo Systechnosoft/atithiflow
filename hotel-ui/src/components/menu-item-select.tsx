@@ -26,6 +26,7 @@ type Props = {
     showFullText?: boolean
     onOpenChange?: (open: boolean) => void
     ariaLabel?: string
+    forceNative?: boolean
 };
 
 export function MenuItemSelect({
@@ -52,7 +53,7 @@ export function MenuItemSelect({
         return [];
     }, [items]);
 
-    const normalizedDisabledIds = disabledIds ?? [];
+    const normalizedDisabledIds = useMemo(() => disabledIds ?? [], [disabledIds]);
 
     const filteredItems = useMemo(() => {
         return normalizedItems.filter((item) => {
@@ -69,7 +70,7 @@ export function MenuItemSelect({
         return normalizedItems.find(item => String(item.id) === String(value) || String(item.label) === String(value));
     }, [normalizedItems, value]);
 
-    const getLabel = (item: any) => String(item[itemName] ?? item.label ?? item.id);
+    const getLabel = (item: Record<string, unknown> & { label?: string; id?: number | string }) => String(item[itemName] ?? item.label ?? item.id);
     const maxLabelLength = filteredItems.reduce(
         (max, item) => Math.max(max, getLabel(item).length),
         placeholder.length

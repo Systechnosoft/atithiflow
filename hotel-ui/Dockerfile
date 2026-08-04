@@ -1,9 +1,10 @@
 ### Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+ENV NODE_ENV=development
+RUN npm ci --include=dev
 
 COPY . .
 RUN npm run build

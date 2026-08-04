@@ -1,13 +1,13 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: atithiflow-db
+    container_name: atithiflow-db-dev
     environment:
       POSTGRES_DB: atithiflow
       POSTGRES_USER: atithi
       POSTGRES_PASSWORD: atithi_password
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-atithi} -d ${POSTGRES_DB:-atithiflow} -h localhost"]
       interval: 10s
@@ -19,49 +19,49 @@ services:
       - atithi-net
 
   backend:
-    build:
-      context: ./hotel-api
-      dockerfile: Dockerfile
-    image: atithiflow-backend:latest
-    container_name: atithiflow-backend
+    image: node:20-alpine
+    container_name: atithiflow-backend-dev
+    working_dir: /usr/src/app
     env_file:
       - ./hotel-api/.env
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3000
-      - ALLOWED_ORIGINS=http://localhost,http://localhost:3000
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+    volumes:
+      - ./hotel-api:/usr/src/app:cached
+      - /usr/src/app/node_modules
     ports:
       - "3000:3000"
+    command: sh -c "npm ci && npm run dev"
     depends_on:
       db:
         condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "node ./scripts/healthcheck.js"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
     networks:
       - atithi-net
 
   frontend:
-    build:
-      context: ./hotel-ui
-      dockerfile: Dockerfile
-    image: atithiflow-frontend:latest
-    container_name: atithiflow-frontend
+    image: node:20-alpine
+    container_name: atithiflow-frontend-dev
+    working_dir: /app
+    env_file:
+      - ./hotel-ui/.env
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./hotel-ui:/app:cached
+      - /app/node_modules
     ports:
-      - "80:80"
+      - "5173:5173"
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
     depends_on:
       backend:
         condition: service_started
-    restart: unless-stopped
     networks:
       - atithi-net
 
 volumes:
-  db_data:
+  db_data_dev:
 
 networks:
   atithi-net:

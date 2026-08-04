@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import Sidebar from "@/components/layout/sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 import AppHeader from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";

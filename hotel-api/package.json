@@ -8,10 +8,14 @@
   "main": "index.js",
   "scripts": {
     "migrate": "node ./scripts/run-migrations.js",
-    "create-super-admin": "node ./scripts/bootstrap-admin.js",
-    "seed": "node ./scripts/seed-master-data.js",
-    "dev": "nodemon ./index.js",
-    "start": "node index.js"
+    "validate-env": "node ./scripts/validate-env.js",
+    "validate-deps": "node ./scripts/validate-deps.js",
+    "validate-db": "node ./scripts/validate-db.js",
+    "validate-migrations": "node ./scripts/validate-migrations.js",
+    "validate-seed": "node ./scripts/validate-seed.js",
+    "run-seeds": "node ./scripts/run-seeds.js",
+    "start": "node index.js",
+    "dev": "nodemon ./index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",

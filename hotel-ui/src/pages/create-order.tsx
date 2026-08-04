@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataGrid, DataGridHeader, DataGridRow, DataGridHead, DataGridCell } from "@/components/ui/data-grid";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import Sidebar from "@/components/layout/sidebar";
+import Sidebar from "@/components/layout/Sidebar";
 import AppHeader from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,7 +87,7 @@ export function CreateOrder() {
     const [selectedRoomNo, setSelectedRoomNo] = useState("");
     const [selectedMenuGroups, setSelectedMenuGroups] = useState({})
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-    const [itemErrors, setItemErrors] = useState<Record<number, any>>({});
+    const [itemErrors, setItemErrors] = useState<Record<number, { group?: string; item?: string; quantity?: string }>>({});
     const [orderSubmitted, setOrderSubmitted] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -146,7 +146,7 @@ export function CreateOrder() {
 
     const [createOrder] = useCreateOrderMutation();
     const confirmedBookingRoomOptions = useMemo(() => {
-        return (todayInHouseRooms || []).map((room: any) => ({
+        return (todayInHouseRooms || []).map((room: { booking_id: string | number; room_no: string | number }) => ({
             value: `${room.booking_id}:${room.room_no}`,
             bookingId: Number(room.booking_id),
             roomNo: String(room.room_no),
@@ -219,7 +219,7 @@ export function CreateOrder() {
         if (!selectedRoomNo || !rooms?.length) return;
 
         const selectedRoom = rooms.find(
-            (room: any) => String(room.room_no) === selectedRoomNo
+            (room: { room_no: string | number; ref_room_id: string | number }) => String(room.room_no) === selectedRoomNo
         );
 
         if (selectedRoom && String(order.room_id || "") !== String(selectedRoom.ref_room_id)) {
@@ -236,8 +236,8 @@ export function CreateOrder() {
             return
         }
 
-        let prefix = primaryGuest?.phone?.split(" ")[0] || "+91";
-        let phone = primaryGuest?.phone?.split(" ")[1] || primaryGuest?.phone;
+        const prefix = primaryGuest?.phone?.split(" ")[0] || "+91";
+        const phone = primaryGuest?.phone?.split(" ")[1] || primaryGuest?.phone;
 
         setOrder(o => ({ ...o, guest_name: primaryGuest?.first_name, guest_mobile: phone, guest_mobile_prefix: prefix }))
     }, [primaryGuest, order.order_type, order.booking_id])
@@ -359,9 +359,9 @@ export function CreateOrder() {
     };
 
     const validateItems = () => {
-        const errors: Record<number, any> = {};
+        const errors: Record<number, { group?: boolean; item?: boolean; quantity?: boolean }> = {};
         items.forEach((item, index) => {
-            const rowError: any = {};
+            const rowError: { group?: boolean; item?: boolean; quantity?: boolean } = {};
             if (!selectedMenuGroups[index]) rowError.group = true;
             if (!item.menu_item_id) rowError.item = true;
             if (!item.quantity || item.quantity <= 0) rowError.quantity = true;
@@ -486,7 +486,7 @@ export function CreateOrder() {
     const canAddRow = items.length === 0 || !hasEmptyRow;
     const isRoomService = order.order_type === "Room Service";
 
-    const selectedProperty = myProperties?.properties?.find((p: any) => p.id === selectedPropertyId);
+    const selectedProperty = myProperties?.properties?.find((p: { id: number | null }) => p.id === selectedPropertyId);
     const gstRate = propertyTax?.restaurant_gst ? Number(propertyTax.restaurant_gst) : 0;
     const subTotal = order.total_amount || 0;
     const cgstRate = Number((gstRate / 2).toFixed(2));

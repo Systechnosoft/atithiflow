@@ -94,7 +94,7 @@ export default function PaymentsEmbedded({
 
     useEffect(() => {
         if (!data?.data) return;
-        const fetched = data.data.map((p: any) => ({
+        const fetched = data.data.map((p: { payment_date: string; paid_amount: string | number; [key: string]: unknown }) => ({
             ...p,
             payment_date: toPaymentDateInput(p.payment_date),
             paid_amount: String(p.paid_amount)
@@ -345,7 +345,7 @@ export default function PaymentsEmbedded({
                                                                         onChange={(e) => updateRow(index, { bank_name: e.target.value })}
                                                                     >
                                                                         <option value="">Select Bank</option>
-                                                                        {banks?.map((b: any, i: number) => (
+                                                                        {banks?.map((b: { bank_name: string }, i: number) => (
                                                                             <option key={i} value={b.bank_name}>{b.bank_name}</option>
                                                                         ))}
                                                                     </NativeSelect>

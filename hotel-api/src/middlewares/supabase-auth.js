@@ -55,7 +55,15 @@ export async function supabaseAuth(req, res, next) {
         next();
     } catch (err) {
         console.error("Auth middleware error:", err);
-        res.status(500).json({ error: "Authentication failed" });
+        
+        // Handle database connection / IP whitelist issues specifically
+        if (err.code && ['ENETUNREACH', 'ECONNREFUSED', 'ETIMEDOUT', 'EHOSTUNREACH'].includes(err.code)) {
+            return res.status(503).json({ 
+                error: "Database connection failed. This might be due to an IP restriction or an unreachable IPv6 address (like Supabase connection limits)." 
+            });
+        }
+        
+        res.status(500).json({ error: "Authentication failed due to an internal error" });
     }
 }
 

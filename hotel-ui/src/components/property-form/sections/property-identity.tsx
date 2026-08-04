@@ -6,11 +6,11 @@ import { useAppSelector } from "@/redux/hook";
 import { selectIsSuperAdmin } from "@/redux/selectors/auth.selectors";
 
 type Props = {
-    value: any;
-    setValue: (fn: (prev: any) => any) => void;
+    value: Record<string, unknown>;
+    setValue: (fn: (prev: Record<string, unknown>) => Record<string, unknown>) => void;
 
-    errors: Record<string, any>;
-    setErrors: (fn: (prev: any) => any) => void;
+    errors: Record<string, unknown>;
+    setErrors: (fn: (prev: Record<string, unknown>) => Record<string, unknown>) => void;
 
     viewMode: boolean;
     mode?: "add" | "edit" | "view";
@@ -83,9 +83,9 @@ export default function PropertyIdentity({
                             <Label className="text-sm font-semibold">Status: </Label>
                             <div className="flex items-center gap-2">
                                 <Switch
-                                    checked={value.is_active ?? true}
+                                    checked={Boolean(value.is_active ?? true)}
                                     onCheckedChange={(checked) => {
-                                        setValue((prev: any) => ({ ...prev, is_active: checked }));
+                                        setValue((prev: Record<string, unknown>) => ({ ...prev, is_active: checked }));
                                     }}
                                 />
                                 <span className="text-sm text-muted-foreground font-medium">
@@ -149,7 +149,7 @@ function MediaSquare({
     onFile,
     onError,
     objectFit = "cover",
-}: any) {
+}: { label: string; preview: string | null; fallback: string | null; viewMode: boolean; onFile: (file: File) => void; onError: () => void; objectFit?: string; }) {
 
     const src = preview || fallback;
 
